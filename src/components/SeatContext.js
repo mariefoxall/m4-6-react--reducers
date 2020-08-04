@@ -1,3 +1,5 @@
+import React from "react";
+
 export const SeatContext = React.createContext();
 
 const initialState = {
@@ -7,7 +9,22 @@ const initialState = {
   seatsPerRow: 0,
 };
 
-const reducer = (state, action) => {};
+const reducer = (state, action) => {
+  console.log(action);
+  switch (action.type) {
+    case "receive-seat-info-from-server": {
+      return {
+        ...state,
+        hasLoaded: true,
+        seats: action.seats,
+        numOfRows: action.numOfRows,
+        seatsPerRow: action.seatsPerRow,
+      };
+    }
+    default:
+      throw new Error(`Unrecognized action: ${action.type}`);
+  }
+};
 
 export const SeatProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
