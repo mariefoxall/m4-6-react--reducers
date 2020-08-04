@@ -2,9 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { SeatContext } from "./SeatContext";
-import seatSrc from "../assets/seat-available.svg";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
+import Seat from "./Seat";
 
 import { getRowName, getSeatNum } from "../helpers";
 import { range } from "../utils";
@@ -37,18 +35,18 @@ const TicketWidget = () => {
                   const seatId = `${rowName}-${getSeatNum(seatIndex)}`;
                   return (
                     <SeatWrapper key={seatId}>
-                      {bookedSeats[seatId] ? (
-                        <GraySeat src={seatSrc} alt="booked seat" />
-                      ) : (
-                        <Tippy
-                          content={`Row ${rowName}, Seat ${getSeatNum(
-                            seatIndex
-                          )} - $${seats[seatId].price}`}
-                        >
-                          <img src={seatSrc} alt="empty seat" />
-                        </Tippy>
-                      )}
-                      {/* TODO: Render the actual <Seat /> */}
+                      <Seat
+                        rowIndex={rowIndex}
+                        seatIndex={seatIndex}
+                        width={36}
+                        height={36}
+                        price={seats[seatId].price}
+                        status={
+                          bookedSeats[seatId] ? "unavailable" : "available"
+                        }
+                        rowName={rowName}
+                        seatNum={getSeatNum(seatIndex)}
+                      />
                     </SeatWrapper>
                   );
                 })}
@@ -60,9 +58,6 @@ const TicketWidget = () => {
     </>
   );
 };
-const GraySeat = styled.img`
-  filter: grayscale(100%);
-`;
 
 const Wrapper = styled.div`
   background: #eee;
