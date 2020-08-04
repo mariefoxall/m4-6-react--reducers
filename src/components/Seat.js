@@ -3,6 +3,7 @@ import seatSrc from "../assets/seat-available.svg";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import styled from "styled-components";
+import { BookingContext } from "./BookingContext";
 
 const Seat = ({
   rowIndex,
@@ -14,9 +15,17 @@ const Seat = ({
   rowName,
   seatNum,
 }) => {
+  const {
+    state,
+    actions: { beginBookingProcess },
+  } = React.useContext(BookingContext);
+
   return (
     <>
-      <SeatButton disabled={status === "unavailable" ? true : false}>
+      <SeatButton
+        onClick={(ev) => beginBookingProcess({ seatIndex, price })}
+        disabled={status === "unavailable" ? true : false}
+      >
         {status === "unavailable" ? (
           <GraySeat src={seatSrc} alt="booked seat" />
         ) : (
