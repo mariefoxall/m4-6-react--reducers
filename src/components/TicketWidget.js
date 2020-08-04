@@ -3,13 +3,15 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { SeatContext } from "./SeatContext";
 import seatSrc from "../assets/seat-available.svg";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 import { getRowName, getSeatNum } from "../helpers";
 import { range } from "../utils";
 
 const TicketWidget = () => {
   const {
-    state: { numOfRows, seatsPerRow },
+    state: { numOfRows, seatsPerRow, hasLoaded, bookedSeats, seats },
   } = React.useContext(SeatContext);
 
   console.log("numOfRows: ", numOfRows, "seatsPerRow: ", seatsPerRow);
@@ -18,29 +20,49 @@ const TicketWidget = () => {
   // with the hasLoaded flag
 
   return (
-    <Wrapper>
-      {range(numOfRows).map((rowIndex) => {
-        const rowName = getRowName(rowIndex);
+    <>
+      {hasLoaded === false ? (
+        <ProgressDiv>
+          <CircularProgress />
+        </ProgressDiv>
+      ) : (
+        <Wrapper>
+          {range(numOfRows).map((rowIndex) => {
+            const rowName = getRowName(rowIndex);
 
-        return (
-          <Row key={rowIndex}>
-            <RowLabel>Row {rowName}</RowLabel>
-            {range(seatsPerRow).map((seatIndex) => {
-              const seatId = `${rowName}-${getSeatNum(seatIndex)}`;
-
-              return (
-                <SeatWrapper key={seatId}>
-                  <img src={seatSrc} alt="empty seat" />
-                  {/* TODO: Render the actual <Seat /> */}
-                </SeatWrapper>
-              );
-            })}
-          </Row>
-        );
-      })}
-    </Wrapper>
+            return (
+              <Row key={rowIndex}>
+                <RowLabel>Row {rowName}</RowLabel>
+                {range(seatsPerRow).map((seatIndex) => {
+                  const seatId = `${rowName}-${getSeatNum(seatIndex)}`;
+                  return (
+                    <SeatWrapper key={seatId}>
+                      {bookedSeats[seatId] ? (
+                        <GraySeat src={seatSrc} alt="booked seat" />
+                      ) : (
+                        <Tippy
+                          content={`Row ${rowName}, Seat ${getSeatNum(
+                            seatIndex
+                          )} - $${seats[seatId].price}`}
+                        >
+                          <img src={seatSrc} alt="empty seat" />
+                        </Tippy>
+                      )}
+                      {/* TODO: Render the actual <Seat /> */}
+                    </SeatWrapper>
+                  );
+                })}
+              </Row>
+            );
+          })}
+        </Wrapper>
+      )}
+    </>
   );
 };
+const GraySeat = styled.img`
+  filter: grayscale(100%);
+`;
 
 const Wrapper = styled.div`
   background: #eee;
@@ -64,6 +86,14 @@ const RowLabel = styled.div`
 
 const SeatWrapper = styled.div`
   padding: 5px;
+`;
+
+const ProgressDiv = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default TicketWidget;
