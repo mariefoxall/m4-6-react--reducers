@@ -14,6 +14,7 @@ const Seat = ({
   status,
   rowName,
   seatNum,
+  seatId,
 }) => {
   const {
     state,
@@ -23,7 +24,7 @@ const Seat = ({
   return (
     <>
       <SeatButton
-        onClick={(ev) => beginBookingProcess({ seatIndex, price })}
+        onClick={(ev) => beginBookingProcess({ seatId, price })}
         disabled={status === "unavailable" ? true : false}
       >
         {status === "unavailable" ? (

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { SeatContext } from "./SeatContext";
 import Seat from "./Seat";
+import PurchaseModal from "./PurchaseModal";
 
 import { getRowName, getSeatNum } from "../helpers";
 import { range } from "../utils";
@@ -32,6 +33,7 @@ const TicketWidget = () => {
                   const seatId = `${rowName}-${getSeatNum(seatIndex)}`;
                   return (
                     <SeatWrapper key={seatId}>
+                      <PurchaseModal />
                       <Seat
                         rowIndex={rowIndex}
                         seatIndex={seatIndex}
@@ -43,6 +45,7 @@ const TicketWidget = () => {
                         }
                         rowName={rowName}
                         seatNum={getSeatNum(seatIndex)}
+                        seatId={seatId}
                       />
                     </SeatWrapper>
                   );
