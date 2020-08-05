@@ -24,25 +24,34 @@ const reducer = (state, action) => {
     case "cancel-booking-process": {
       return initialState;
     }
+    case "purchase-ticket-request": {
+      return {
+        ...state,
+        status: "awaiting-response",
+      };
+    }
+    case "purchase-ticket-failure": {
+      return {
+        ...state,
+        status: "error",
+        error: action.err,
+        selectedSeatId: action.seatId,
+        price: action.price,
+      };
+    }
+    case "purchase-ticket-success": {
+      return {
+        ...state,
+        status: "purchased",
+        error: null,
+        selectedSeatId: null,
+        price: null,
+      };
+    }
     default:
       return state;
   }
 };
-
-// const exampleReducer = (currentState, action) => {
-//     const newState = {...currentState}
-//     const newState = currentState
-//     switch (action.type) {
-//         case "begin-booking-process": {
-//             newState.price = 100
-//             break;
-//         }
-//         default:
-//            break;
-//       }
-
-//     return newState
-// }
 
 export const BookingProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -51,13 +60,54 @@ export const BookingProvider = ({ children }) => {
     dispatch({ type: "begin-booking-process", ...data });
   };
 
-  const cancelBookingProcess = (data) => {
-    dispatch({ type: "cancel-booking-process", ...data });
+  const cancelBookingProcess = () => {
+    dispatch({ type: "cancel-booking-process" });
+  };
+
+  const purchaseTicketFailure = (data) => {
+    dispatch({ type: "purchase-ticket-failure", ...data });
+  };
+
+  const purchaseTicketSuccess = () => {
+    dispatch({ type: "purchase-ticket-success" });
+  };
+
+  const purchaseTicketRequest = (data) => {
+    const seatId = data.purchaseSeatId;
+    const price = data.price;
+    dispatch({ type: "purchase-ticket-request" });
+    fetch("api/book-seat", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        seatId: data.purchaseSeatId,
+        creditCard: data.creditCard,
+        expiration: data.expiration,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        purchaseTicketSuccess();
+      })
+      .catch((err) => {
+        purchaseTicketFailure({ err, seatId, price });
+      });
   };
 
   return (
     <BookingContext.Provider
-      value={{ state, actions: { beginBookingProcess, cancelBookingProcess } }}
+      value={{
+        state,
+        actions: {
+          beginBookingProcess,
+          cancelBookingProcess,
+          purchaseTicketRequest,
+        },
+      }}
     >
       {children}
     </BookingContext.Provider>

@@ -12,7 +12,7 @@ import styled from "styled-components";
 const PurchaseModal = () => {
   const {
     state,
-    actions: { cancelBookingProcess },
+    actions: { cancelBookingProcess, purchaseTicketRequest },
   } = React.useContext(BookingContext);
   const handleClose = () => {
     cancelBookingProcess();
@@ -21,11 +21,14 @@ const PurchaseModal = () => {
   const [creditCard, setCreditCard] = React.useState("");
   const [expiration, setExpiration] = React.useState("");
 
+  let purchaseSeatId = state.selectedSeatId;
+  const price = state.price;
+
   //   console.log(creditCard, expiration);
   return (
     <div>
       <Dialog
-        open={state.selectedSeatId !== null}
+        open={purchaseSeatId !== null}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
@@ -43,14 +46,8 @@ const PurchaseModal = () => {
                 <th>Price</th>
               </tr>
               <tr>
-                <td>
-                  {state.selectedSeatId !== null &&
-                    state.selectedSeatId.slice(0, 1)}
-                </td>
-                <td>
-                  {state.selectedSeatId !== null &&
-                    state.selectedSeatId.slice(2)}
-                </td>
+                <td>{purchaseSeatId !== null && purchaseSeatId.slice(0, 1)}</td>
+                <td>{purchaseSeatId !== null && purchaseSeatId.slice(2)}</td>
                 <td>${state.price}</td>
               </tr>
             </tbody>
@@ -78,7 +75,17 @@ const PurchaseModal = () => {
               fullWidth
             />
             <DialogActions>
-              <Button onClick={handleClose} color="primary">
+              <Button
+                onClick={(ev) => {
+                  purchaseTicketRequest({
+                    purchaseSeatId,
+                    creditCard,
+                    expiration,
+                    price,
+                  });
+                }}
+                color="primary"
+              >
                 PURCHASE
               </Button>
             </DialogActions>
