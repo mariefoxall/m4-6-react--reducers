@@ -17,31 +17,62 @@ const PurchaseModal = () => {
   const handleClose = () => {
     cancelBookingProcess();
   };
+
+  const [creditCard, setCreditCard] = React.useState("");
+  const [expiration, setExpiration] = React.useState("");
+
+  //   console.log(creditCard, expiration);
   return (
     <div>
-      <Dialog open={state.selectedSeatId !== null} onClose={handleClose}>
+      <Dialog
+        open={state.selectedSeatId !== null}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
         <DialogTitle id="form-dialog-title">Purchase Ticket</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <p>Seat: {state.selectedSeatId}</p>
-            <p>Price: ${state.price}</p>
+            You are purchasing <strong>1</strong> ticket for the price of $
+            {state.price}.
           </DialogContentText>
+          <Table>
+            <tbody>
+              <tr>
+                <th>Row</th>
+                <th>Seat</th>
+                <th>Price</th>
+              </tr>
+              <tr>
+                <td>
+                  {state.selectedSeatId !== null &&
+                    state.selectedSeatId.slice(0, 1)}
+                </td>
+                <td>
+                  {state.selectedSeatId !== null &&
+                    state.selectedSeatId.slice(2)}
+                </td>
+                <td>${state.price}</td>
+              </tr>
+            </tbody>
+          </Table>
         </DialogContent>
         <PurchaseDiv>
           <DialogContent>
             <h4>Enter Payment Details:</h4>
             <TextField
+              onChange={(ev) => setCreditCard(ev.target.value)}
               autoFocus
               margin="dense"
-              id="name"
+              //   id="name"
               label="Credit Card"
               type="text"
               fullWidth
             />
             <TextField
+              onChange={(ev) => setExpiration(ev.target.value)}
               autoFocus
               margin="dense"
-              id="name"
+              //   id="name"
               label="Expiration"
               type="text"
               fullWidth
@@ -60,6 +91,11 @@ const PurchaseModal = () => {
 
 const PurchaseDiv = styled.div`
   background-color: lightgrey;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  text-align: center;
 `;
 
 export default PurchaseModal;
